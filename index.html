@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Augmented Reality</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<script src="js/aframe.min.js"></script>
+<script type="text/javascript">
+AFRAME.registerComponent('soundhandler', {
+    tick: function () {
+           var entity = document.querySelector('[sound]');
+         if (document.querySelector('a-entity').object3D.visible == true) {
+            entity.components.sound.playSound();
+        } else {
+            entity.components.sound.pauseSound();
+        }
+
+     }
+	});
+</script>
+<script type="text/javascript">
+    AFRAME.registerComponent('drag-rotate-component',{
+      schema : { speed : {default:1}},
+      init : function(){
+        this.ifTouchStart = false;
+        this.x_cord = 0;
+        this.y_cord = 0;
+        document.addEventListener('touchstart',this.OnDocumentTouchStart.bind(this));
+        document.addEventListener('touchend',this.OnDocumentTouchEnd.bind(this));
+        document.addEventListener('touchmove',this.OnDocumentTouchMove.bind(this));
+      },
+      OnDocumentTouchStart : function(event){
+        this.ifTouchStart = true;
+        this.x_cord = event.touches[0].clientX;
+        this.y_cord = event.touches[0].clientY;
+      },
+      OnDocumentTouchEnd : function(){
+        this.ifTouchEnd = false;
+      },
+      OnDocumentTouchMove : function(event)
+      {
+        if(this.ifTouchStart)
+        {
+          var temp_x = event.touches[0].clientX-this.x_cord;
+          var temp_y = event.touches[0].clientY-this.y_cord;
+          if(Math.abs(temp_y)<Math.abs(temp_x))
+          {
+            this.el.object3D.rotateY(temp_x*this.data.speed/100);
+          }
+          else
+          {
+            this.el.object3D.rotateX(temp_y*this.data.speed/100);
+          }
+          this.x_cord = event.touches[0].clientX;
+          this.y_cord = event.touches[0].clientY;
+        }
+      }
+    });
+</script>
+<style>
+.a-enter-vr-button {display:none;}
+</style>
+</head>
+<body>
+<a-scene >
+	<a-entity drag-rotate-component	soundhandler sound="src: url(bri_murphy_interview.mp3); volume: 3; positional: false; autoplay: false; poolSize: 1" 
+		rotation="360 90 0" scale="0.1 0.1 0.1" position="0 0 -4" obj-model="obj: url(models/jefferson.obj); mtl: url(models/jefferson.mtl)">
+	</a-entity>
+	<a-entity sound="src: #sound" autoplay="false"></a-entity>
+	<a-sky color="d4d1cc"></a-sky>
+	<a-camera look-controls-enabled="false"></a-camera>
+
+</a-scene>
+
+</body>
+</html>
